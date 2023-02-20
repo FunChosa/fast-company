@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { paginate } from "../utils/paginate";
 import Pagination from "./pagination";
 import PropTypes from "prop-types";
-
+import GroupList from "./groupList";
 import User from "./user";
 const Users = ({ users, ...rest }) => {
     const count = users.length;
@@ -15,6 +15,7 @@ const Users = ({ users, ...rest }) => {
     const userCrop = paginate(users, currentPage, pageSize);
     return (
         <>
+            <GroupList items />
             {count > 0 && (
                 <table className="table">
                     <thead>
