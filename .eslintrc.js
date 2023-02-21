@@ -13,7 +13,10 @@ module.exports = {
     rules: {
         indent: ["error", 4],
         semi: [2, "always"],
-        "space-before-function-paren": ["error", "never"],
+        "space-before-function-paren": [
+            "error",
+            { anonymos: "always", named: "never" }
+        ],
         quotes: ["error", "double", { allowTemplateLiterals: true }]
     }
 };

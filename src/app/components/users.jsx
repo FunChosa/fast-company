@@ -1,28 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { paginate } from "../utils/paginate";
 import Pagination from "./pagination";
 import PropTypes from "prop-types";
 import GroupList from "./groupList";
 import User from "./user";
-const Users = ({ users, ...rest }) => {
-    const count = users.length;
-    const pageSize = 4;
+import api from "../api";
+const Users = ({ users: allUsers, ...rest }) => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [professions, setProfessions] = useState();
+    const [selectedProf, setSelectedProf] = useState();
+    const count = allUsers.length;
+    const pageSize = 4;
     const handlePageChange = (pageIndex) => {
         setCurrentPage(pageIndex);
     };
 
-    const userCrop = paginate(users, currentPage, pageSize);
+    useEffect(() => {
+        api.professions.fetchAll().then((data) =>
+            setProfessions(
+                Object.assign(data, {
+                    allProfession: { name: "Все профессии" }
+                })
+            )
+        );
+    }, []);
+
+    const handleProfessionSelect = (item) => {
+        setSelectedProf(item);
+    };
+
+    const filteredUsers = selectedProf
+        ? allUsers.filter((user) => user.professions === selectedProf)
+        : allUsers;
+
+    const userCrop = paginate(filteredUsers, currentPage, pageSize);
+
     return (
         <>
-            <GroupList items />
+            {professions && (
+                <GroupList
+                    selectedItem={selectedProf}
+                    items={professions}
+                    onItemSelect={handleProfessionSelect}
+                />
+            )}
             {count > 0 && (
                 <table className="table">
                     <thead>
                         <tr>
                             <th scope="col">Имя</th>
                             <th scope="col">Качества</th>
-                            <th scope="col">Провфессия</th>
+                            <th scope="col">Профессия</th>
                             <th scope="col">Встретился, раз</th>
                             <th scope="col">Оценка</th>
                             <th scope="col">Избранное</th>
@@ -47,6 +75,6 @@ const Users = ({ users, ...rest }) => {
 };
 Users.propTypes = {
     users: PropTypes.array.isRequired,
-    length: PropTypes.number.isRequired
+    length: PropTypes.number
 };
 export default Users;
